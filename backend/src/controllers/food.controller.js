@@ -125,6 +125,9 @@ async function saveFood(req, res) {
 }
 
 async function getSavedFood(req, res) {
+
+    const user = req.user;
+
     const savedFoods = await saveModel.find({ user: req.user._id }).populate('food');
     
     if(!savedFoods || savedFoods.length === 0) {

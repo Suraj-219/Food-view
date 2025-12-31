@@ -15,5 +15,5 @@ const saveSchema = new mongoose.Schema({
     timestamps: true
 })
 
-const Save = mongoose.model("save", saveSchema);
-module.exports = Save;
+const saveModel = mongoose.model("save", saveSchema);
+module.exports = saveModel;
