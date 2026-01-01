@@ -46,43 +46,56 @@ async function getFoodItems(req, res) {
 }
 
 async function likeFood(req, res) {
-    const { foodId } = req.body;
-    const user = req.user;
+    try {
+        const { foodId } = req.body;
+        const userId = req.user._id;
 
-    const isAlreadyLiked = await likeModel.findOne({
-        user: user._id,
-        food: foodId
-    })
+        if (!foodId) {
+            return res.status(400).json({ message: "foodId is required" });
+        }
 
-    if(!isAlreadyLiked) {
-        await likeModel.deleteOne({
-            user: user._id,
+        const existingLike = await likeModel.findOne({
+            user: userId,
             food: foodId
-        })
+        });
 
-        await foodModel.findByIdAndUpdate(foodId,{
-            $inc: { likeCount: -1 }
-        })
+        // 👉 UNLIKE
+        if (existingLike) {
+            await likeModel.deleteOne({ _id: existingLike._id });
 
-        return res.status(200).json({
-            message: "Food unliked",
-        })
+            await foodModel.findByIdAndUpdate(foodId, {
+                $inc: { likeCount: -1 }
+            });
+
+            return res.status(200).json({
+                message: "Food unliked",
+                like: false
+            });
+        }
+
+        // 👉 LIKE
+        const like = await likeModel.create({
+            user: userId,
+            food: foodId
+        });
+
+        await foodModel.findByIdAndUpdate(foodId, {
+            $inc: { likeCount: 1 }
+        });
+
+        return res.status(201).json({
+            message: "Food liked",
+            like: true
+        });
+
+    } catch (error) {
+        console.error("LIKE ERROR:", error);
+        return res.status(500).json({
+            message: "Internal server error"
+        });
     }
-
-    const like = await likeModel.create({
-        user: user._id,
-        food: foodId
-    })
-
-    await foodModel.findByIdAndUpdate(foodId,{
-        $inc: { likeCount: 1 }
-    })
-
-    res.status(201).json({
-        message: "Food liked",
-        like
-    })
 }
+
 
 async function saveFood(req, res) {
     // Implementation for saving food items goes here
