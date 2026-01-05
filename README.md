@@ -104,7 +104,6 @@ POST   /api/auth/foodpartner/register
 POST   /api/auth/foodpartner/login
 GET    /api/auth/foodpartner/logout
 
-### Food
 
 POST   /api/food              (Food Partner only)
 GET    /api/food              (User only)
@@ -112,7 +111,6 @@ POST   /api/food/like         (User only)
 POST   /api/food/save         (User only)
 GET    /api/food/save         (User only)
 
-### Food Partner
 
 GET    /api/food-partner/:id  (User only)
 ```
